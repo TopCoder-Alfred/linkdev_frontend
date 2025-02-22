@@ -1,0 +1,6 @@
+.btnEnabled {
+  background: #2a3d4e !important;
+  color: #ffffff !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}

@@ -1,0 +1,60 @@
+pipeline {
+    agent any
+    options {
+        ansiColor('xterm')
+    }
+    environment {
+        WorkDir = "./client/"
+        ACR_LOGIN_SERVER = "linkdevapp.azurecr.io"
+        IMAGE_NAME = "linkdevapp-frontend"
+        ENVIRONMENT = "failover"
+        IMAGE_TAG = "${ENVIRONMENT}-${env.BUILD_ID}"
+        AZURE_CREDENTIAL = "Azure_service_principal"
+        AZURE_SUBSCRIPTION_ID = "494896aa-7154-4f70-a4d7-5a63f9b7e5a7"
+        RESOURCE_GROUP = "linkdevapp-rg"
+        AKS_NAME = "linkdevapp-aks"
+    }
+
+    stages {
+        stage('Azure login and push image to ACR') {
+            steps {
+                dir(WorkDir) {
+                    withCredentials([azureServicePrincipal("$AZURE_CREDENTIAL")]) {
+                        echo "============Azure login and push image to ACR============"
+                        sh 'az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t ${AZURE_TENANT_ID}'
+                        sh 'az account set -s $AZURE_SUBSCRIPTION_ID'
+                        sh 'az acr login --name ${ACR_LOGIN_SERVER}'
+                        sh 'az acr build -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:${IMAGE_TAG} -r ${ACR_LOGIN_SERVER} -f Dockerfile . '
+                    }
+                }
+            }
+        }
+
+        stage('Deploying frontend image to Azure Kubernetes Engine') {
+            steps {
+                dir(WorkDir) {
+                    echo "============Deploying frontend image to Azure Kubernetes Engine============"
+                    sh "sed -i 's|linkdevapp-frontend:latest|linkdevapp-frontend:${IMAGE_TAG}|g' cicd/linkdevapp-frontend.yaml"
+                    sh "az aks get-credentials --resource-group ${RESOURCE_GROUP} --name ${AKS_NAME}"
+                    sh "kubectl apply -f cicd/linkdevapp-frontend.yaml"
+                    sh "kubectl get svc -o wide"
+                    sh "rm -rf cicd/linkdevapp-frontend.yaml"
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "============Sending Emails============"
+            emailext body: '$DEFAULT_CONTENT', subject: '$DEFAULT_SUBJECT', to: '$DEFAULT_RECIPIENTS'
+            cleanWs()
+        }
+        success {
+            bitbucketStatusNotify(buildState: 'SUCCESSFUL')
+        }
+        failure {
+            bitbucketStatusNotify(buildState: 'FAILED')
+        }
+    }
+}

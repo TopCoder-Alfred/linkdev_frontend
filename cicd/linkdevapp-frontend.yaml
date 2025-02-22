@@ -1,0 +1,36 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: linkdevapp-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: linkdevapp-frontend
+  template:
+    metadata:
+      labels:
+        app: linkdevapp-frontend
+    spec:
+      containers:
+      - name: linkdevapp-frontend
+        image: linkdevapp.azurecr.io/linkdevapp-frontend:latest
+        imagePullPolicy: "Always"
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: linkdevapp-frontend
+spec:
+  type: LoadBalancer
+  selector:
+    app: linkdevapp-frontend
+  ports:
+  - port: 80

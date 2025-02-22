@@ -1,0 +1,54 @@
+{
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "es2021": true
+    },
+    "extends": [  
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:react/jsx-runtime",
+    "plugin:prettier/recommended",
+    "prettier"
+    ],
+    "overrides": [
+    ],
+    "parserOptions": {
+      "ecmaFeatures": {
+      "jsx": true
+    },
+      "ecmaVersion": "latest",
+      "sourceType": "module"
+    },
+    "plugins": [
+        "react",
+        "prettier"
+    ],
+    "rules": {
+      "semi": [2, "always"],
+      "react/prop-types": 0,
+      "react/react-in-jsx-scope": 0,
+      "react/no-unescaped-entities": 0,
+      "no-console": 0,
+      "no-var": 2,
+      "quotes": [2, "double"],
+      "no-const-assign": 2,
+      "no-irregular-whitespace": 2,
+      "no-undef": 2,
+      "jsx-quotes": [2, "prefer-double"],
+      "indent": [2, 2],
+      "comma-dangle": 0,
+      "no-debugger": 0,
+      "no-multi-spaces": 2,
+      "max-len": [1, 120],
+      "prefer-arrow-callback": 2,
+      "no-mixed-spaces-and-tabs": 2,
+      "no-dupe-args": 2,
+      "no-redeclare": 2,
+      "object-curly-newline": 0,
+      "arrow-body-style": 0,
+      "comma-spacing": [2, { "before": false, "after": true }],
+      "key-spacing": [2, { "beforeColon": false, "afterColon": true }],
+      "semi-spacing": [2, { "before": false, "after": true }]
+    }
+}
