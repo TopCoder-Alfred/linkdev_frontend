@@ -30,7 +30,7 @@ const DevelopersCard = ({
 }) => {
   const [formDisplay, setFormDisplay] = useState(false);
   const [submissionPopup, setSubmissionPopup] = useState(false);
-  const linkUrl = `https://linkdevapp.com/${name}`;
+  const linkUrl = `https://aesthetic-sopapillas-a7fe6f.netlify.app//${name}`;
 
   const onSetFormDisplay = () => {
     setFormDisplay((prev) => !prev);
